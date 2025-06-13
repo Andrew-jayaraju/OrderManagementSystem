@@ -9,14 +9,14 @@ import java.util.List;
 
 public interface OrderRepository extends JpaRepository<Order, Integer> {
 
-    @Query("SELECT c.id, c.name, COUNT(o.id) as totalOrders FROM Order o JOIN o.customer c GROUP BY c.id, c.name ORDER BY totalOrders DESC")
+    @Query(nativeQuery = true, value = "SELECT c.id, c.name, COUNT(o.id) as totalOrders FROM orders o JOIN customer c ON o.customer_id = c.id GROUP BY c.id, c.name ORDER BY totalOrders DESC")
     List<Object[]> findTop5Customers(Pageable pageable);
 
     default List<Object[]> findTop5Customers() {
         return findTop5Customers(PageRequest.of(0, 5));
     }
 
-    @Query("SELECT c.id, c.name, COUNT(o.id) FROM Order o JOIN o.customer c GROUP BY c.id, c.name")
+    @Query(nativeQuery = true, value = "SELECT c.id, c.name, COUNT(o.id) as totalOrdersPlaced FROM orders o JOIN customer c ON o.customer_id = c.id GROUP BY c.id, c.name")
     List<Object[]> countOrdersPerCustomer();
 
 }
